@@ -1,0 +1,40 @@
+
+
+<div class="so_main">
+
+  <div class="page_tit">删除项目组成员</div>
+ 
+  <div class="form2">
+  	<form method="post" id="del_user_project_group" action="<?php echo site_url()?>/project_group/del_user_project_group" enctype="multipart/form-data">
+    <dl class="lineD">
+      <dt>项目组名称：</dt>
+      <dd>
+          <?php echo $project_group_list['name'] ?>
+      </dd>
+    </dl>
+    <dl class="lineD">
+      <dt>请选择要删除的人员：</dt>
+      <dd>
+
+        <div id="userarr" >
+           <?php if(isset($user_list)):?>
+                <?php foreach($user_list as $ku=>$vu): ?>
+                <span id="<?php echo $vu['uid'] ?>" class="user_span"><?php echo $vu['chname'] ?>
+                <img onclick="close_span(this)" class="img" src="/admin_style/images/close.gif">
+                </span>
+                <?php  endforeach;?>
+           <?php endif?>
+        </div>
+        <div style="clear:both;"></div>
+      </dd>
+    </dl>
+    <div class="page_btm">
+     <input type="hidden" id="uid_list" name="uid_list" class="btn_b" value="<?php echo $uid_list ?>" />
+     <input type="hidden" id="new_uid_list" name="new_uid_list" class="btn_b" value="" />
+     <input type="hidden" id="pg_id" class="btn_b" value="<?php echo $project_group_list['id'] ?>" />
+      <input type="submit" id="btn_sub" class="btn_b" value="确定" />
+    </div>
+  </form>
+  </div>
+
+</div>

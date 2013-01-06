@@ -1,0 +1,60 @@
+
+$(document).ready(function(){
+	$("#del_user_project_group").validate(
+			{
+				rules:{
+					
+					},
+				messages:{
+				
+					},
+				submitHandler:function (){
+					var sid='';
+			          $("#userarr").find("span").each(function (){
+			          		sid = sid + $(this).attr('id')+','; 
+			          		$("#new_uid_list").val(sid);
+			          });
+						$.ajax({
+						url : '/index.php/project_group/del_user_project_group',
+						type : 'POST',
+						data:{
+							pg_id:$("#pg_id").val(),
+							uid_list:$("#uid_list").val(),
+							new_uid_list:$("#new_uid_list").val(),
+						},
+						dataType:'json',
+						beforeSend: function(){
+							$.jBox.tip("正在提交，请稍候", 'loading');		
+						},
+						success :function (data){
+								$.each(data, function(i,n){
+				  					if(n.status == '0'){
+				  						$.jBox.tip(n.message, 'error')
+				  					}
+				  					if(n.status == '1'){
+				  						var submit = function (v, h, f) {
+										 
+										    if (v == '0')
+										    { 
+										    	window.document.location.href='/index.php/project_group';
+										    }
+										
+										    return true;
+										};
+										$.jBox.closeTip();
+										// 自定义按钮
+										$.jBox.confirm(n.message, "提示", submit, { buttons: { '返回列表页': 0} });
+				  					}
+						  		 });
+							},
+						error : function (){
+								$.jBox.tip('请求错误', 'error')
+							}
+					})
+					return false;
+				}		
+			});
+});
+function close_span(id){
+	$(id).parent("span").remove();
+}

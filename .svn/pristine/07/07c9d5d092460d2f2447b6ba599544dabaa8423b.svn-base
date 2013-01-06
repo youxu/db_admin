@@ -1,0 +1,38 @@
+
+
+<div class="so_main">
+
+  <div class="page_tit">添加项目组</div>
+ 
+  <div class="form2">
+  	<form method="post" id="add_project_group" action="<?php echo site_url()?>/project_group/add_project_group" enctype="multipart/form-data">
+    <dl class="lineD">
+      <dt>项目组名称：</dt>
+      <dd>
+          <?php echo $project_group_list['name'] ?>
+      </dd>
+    </dl>
+    <dl class="lineD">
+      <dt>请选择人员：</dt>
+      <dd>
+        <input name="leader_ulist" id="leader_ulist" type="text" value="">
+        <input name="leader_uid" id="leader_uid" type="hidden" value="">(请输入用户名)
+        <div id="userarr" >
+           <?php if(isset($user_list)):?>
+                <?php foreach($user_list as $ku=>$vu): ?>
+                <span id="<?php echo $vu['uid'] ?>" class="user_span"><?php echo $vu['chname'] ?></span>
+                <?php  endforeach;?>
+           <?php endif?>
+        </div>
+        <div style="clear:both;"></div>
+      </dd>
+    </dl>
+    <div class="page_btm">
+     <input type="hidden" id="uid_list" class="btn_b" value="" />
+     <input type="hidden" id="pg_id" class="btn_b" value="<?php echo $project_group_list['id'] ?>" />
+      <input type="submit" id="btn_sub" class="btn_b" value="确定" />
+    </div>
+  </form>
+  </div>
+
+</div>

@@ -1,0 +1,102 @@
+
+$(document).ready(function(){
+	
+	$("#update_project_group").validate(
+			{
+				rules:{
+					project_group_name:{
+						required:true,
+						remote:{
+							url  : "/index.php/ajax/is_same_pgroupname",
+							type : "POST",
+							//dataType : "xml",
+							data : {
+									name:function(){return $("#project_group_name").val();},
+									old_name:function(){return $("#old_name").val();},
+							},
+						},
+						},
+					leader_uid:{
+						required:true,
+						},			
+					},
+				messages:{
+					project_group_name:{
+							required:"请填写项目组名称",
+							remote:"项目组名重复",
+						},
+					leader_uid:{
+							required:"请选择项目组管理人员",
+						},	
+					},
+				submitHandler:function (){
+						$.ajax({
+						url : '/index.php/project_group/update_project_group',
+						type : 'POST',
+						data:{
+							name:$("#project_group_name").val(),
+							leader_uid:$("#leader_uid").val(),
+							pid:$("#pid").val(),
+							status:$("input[name='status']:checked").val(),
+						},
+						dataType:'json',
+						beforeSend: function(){
+							$.jBox.tip("正在提交，请稍候", 'loading');		
+						},
+						success :function (data){
+								$.each(data, function(i,n){
+				  					if(n.status == '0'){
+				  						$.jBox.tip(n.message, 'error')
+				  					}
+				  					if(n.status == '1'){
+				  						var submit = function (v, h, f) {
+										    if (v == '0')
+										    { 
+										    	window.document.location.href='/index.php/project_group';
+										    }
+										    return true;
+										};
+										$.jBox.closeTip();
+										// 自定义按钮
+										$.jBox.confirm(n.message, "提示", submit, { buttons: { '返回列表页': 0} });
+				  					}
+						  		 });
+							},
+						error : function (){
+								$.jBox.tip('请求错误', 'error')
+							}
+					})
+					return false;
+				}		
+			});
+	$("#leader_ulist").autocomplete("/index.php/ajax/get_username", {
+          max:  12 ,     // 列表里的条目数 
+          minChars:  1 ,     // 自动完成激活之前填入的最小字符 
+          width:  152 ,      // 提示的宽度，溢出隐藏 
+          scrollHeight:  300 ,    // 提示的高度，溢出显示滚动条 
+          matchContains:  true ,     // 包含匹配，就是data参数里的数据，是否只要包含文本框里的数据就显示 
+          autoFill:  false ,     // 自动填充 
+          //json数据转换
+          parse: function(data) {
+            return $.map(eval(data), function(row) {
+                return {
+                    data: row,
+                    value: row.name,
+                    result: row.chname
+                }
+            });
+     	  },
+          formatItem:  function (row, i, max) {
+               return  row.id+ '-'  +row.name  +   '-' + row.chname   ;
+          },
+          formatMatch:  function (row, i, max) {
+               return  row.name  +  row.district;
+          },
+          formatResult:  function (row) {
+               return  row.chname;
+          }
+      }).result( function (event, row, formatted) {
+          $(this).next("#leader_uid").val(row.id);
+      }); 
+
+})

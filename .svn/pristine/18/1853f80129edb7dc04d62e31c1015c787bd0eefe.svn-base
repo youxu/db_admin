@@ -1,0 +1,95 @@
+
+$(document).ready(function(){
+	
+	$("#add_project_group").validate(
+			{
+				rules:{
+					uid_list:{
+						required:true,
+						},			
+					},
+				messages:{
+					uid_list:{
+							required:"请选择项目组管理人员",
+						},	
+					},
+				submitHandler:function (){
+						$.ajax({
+						url : '/index.php/project_group/add_user_project_group',
+						type : 'POST',
+						data:{
+							id:$("#pg_id").val(),
+							uid_list:$("#uid_list").val(),
+						},
+						dataType:'json',
+						beforeSend: function(){
+							$.jBox.tip("正在提交，请稍候", 'loading');		
+						},
+						success :function (data){
+								$.each(data, function(i,n){
+				  					if(n.status == '0'){
+				  						$.jBox.tip(n.message, 'error')
+				  					}
+				  					if(n.status == '1'){
+				  						var submit = function (v, h, f) {
+										 
+										    if (v == '0')
+										    { 
+										    	window.document.location.href='/index.php/project_group';
+										    }
+										
+										    return true;
+										};
+										$.jBox.closeTip();
+										// 自定义按钮
+										$.jBox.confirm(n.message, "提示", submit, { buttons: { '返回列表页': 0} });
+				  					}
+						  		 });
+							},
+						error : function (){
+								$.jBox.tip('请求错误', 'error')
+							}
+					})
+					return false;
+				}		
+			});
+	$("#leader_ulist").autocomplete("/index.php/ajax/get_username", {
+          max:  12 ,     // 列表里的条目数 
+          minChars:  1 ,     // 自动完成激活之前填入的最小字符 
+          width:  152 ,      // 提示的宽度，溢出隐藏 
+          scrollHeight:  300 ,    // 提示的高度，溢出显示滚动条 
+          matchContains:  true ,     // 包含匹配，就是data参数里的数据，是否只要包含文本框里的数据就显示 
+          autoFill:  false ,     // 自动填充 
+          //json数据转换
+          parse: function(data) {
+            return $.map(eval(data), function(row) {
+                return {
+                    data: row,
+                    value: row.name,
+                    result: row.chname
+                }
+            });
+     	  },
+          formatItem:  function (row, i, max) {
+               return  row.id+ '-'  +row.name  +   '-' + row.chname   ;
+          },
+          formatMatch:  function (row, i, max) {
+               return  row.name  +  row.district;
+          },
+          formatResult:  function (row) {
+               return  row.chname;
+          }
+      }).result( function (event, row, formatted) {
+          $("#userarr").append('<span id="'+row.id+'" class="user_span">'+row.chname+'<img onclick="close_span(this)" class="img" src="/admin_style/images/close.gif"/></span>');
+          $("#leader_ulist").val('');
+          var sid='';
+          $("#userarr").find("span").each(function (){
+          		sid = sid + $(this).attr('id')+','; 
+          });
+          $("#uid_list").val(sid);//将所有被选中的人员id加到uidlist这个容器中，post出去
+      }); 
+
+});
+function close_span(id){
+	$(id).parent("span").remove();
+}
